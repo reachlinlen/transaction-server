@@ -9,11 +9,11 @@ const Txn = require('./txnSchema')
 const uri = "mongodb+srv://dbUser:dbPassword@transaction-9gekk.mongodb.net/test?retryWrites=true&w=majority"
 //
 mongoose.connect(uri, { useNewUrlParser: true })
-          .then(() => console.log("Connection auccessful"))
+          .then(() => console.log("Connection successful"))
           .catch(err => console.log("Error connection: ", err))
 //
 app.get('/txn', cors(), (req,res) => {
-  console.log('Received GET request: ')
+  // console.log('Received GET request: ')
   Txn.find()
       .exec()
       .then(docs => {
@@ -23,13 +23,13 @@ app.get('/txn', cors(), (req,res) => {
       .catch(err => err)
 })
 //
-app.put('/txn', jsonParser, (req,res) => {
-  console.log('Received PUT request: ')
+app.put('/txn', cors(), jsonParser, (req,res) => {
+  // console.log('Received PUT request: ')
   // console.log(req.body.body)
   let txn = new Txn(req.body.body)
   txn.save()
-      .then(res => console.log(res))
-      .catch(err => console.log(err))
+      // .then(res => console.log(res))
+      // .catch(err => console.log(err))
   res.send("Transaction PUT Request Completed")
 })
 //
