@@ -4,6 +4,7 @@ var fs = require('fs')
 var bodyParser = require('body-parser')
 var jsonParser = bodyParser.json()
 var mongoose = require('mongoose')
+var cors = require('cors')
 const Txn = require('./txnSchema')
 const uri = "mongodb+srv://dbUser:dbPassword@transaction-9gekk.mongodb.net/test?retryWrites=true&w=majority"
 //
@@ -11,14 +12,20 @@ mongoose.connect(uri, { useNewUrlParser: true })
           .then(() => console.log("Connection auccessful"))
           .catch(err => console.log("Error connection: ", err))
 //
-app.get('/txn', (req,res) => {
-  console.log('Express is working')
-  res.send('Express is working')
+app.get('/txn', cors(), (req,res) => {
+  console.log('Received GET request: ')
+  Txn.find()
+      .exec()
+      .then(docs => {
+        // console.log(docs)
+        return res.send(docs)
+      })
+      .catch(err => err)
 })
 //
 app.put('/txn', jsonParser, (req,res) => {
   console.log('Received PUT request: ')
-  console.log(req.body.body)
+  // console.log(req.body.body)
   let txn = new Txn(req.body.body)
   txn.save()
       .then(res => console.log(res))
@@ -32,18 +39,18 @@ app.listen(8081, () => {
 //
 app.use(function (req, res, next) {
   //Website allowed to connect
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080')
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
 
   //Request methods allowed
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
   //Request headers allowed
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type')
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
 
   //Set to TRUE if you expect the website to include cookies in the requests sent
   // to the API (e.g. in case you use sessions)
-  res.setHeader('Access-Control-Allow-Credentials', true)
+  res.setHeader('Access-Control-Allow-Credentials', true);
 
   //Pass to next layer of middleware
-  next()
+  next();
 })
